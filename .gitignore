@@ -1,0 +1,8 @@
+.env
+.gemini/
+.agents/
+desktop.ini
+node_modules/
+dist/
+build/
+*.log

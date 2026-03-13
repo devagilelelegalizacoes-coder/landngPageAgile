@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Administração - Agile Legalizações</title>
+    <!-- Adicionando CDN do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen p-8">
+    <div id="loading-overlay"
+        class="fixed z-50 inset-0 flex items-center justify-center bg-white dark:bg-slate-900 transition-opacity duration-300">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
+
+    <!-- Login Container -->
+    <div id="login-container"
+        class="max-w-md mx-auto mt-20 bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl border border-primary/10 hidden">
+        <div class="text-center mb-8">
+            <div
+                class="text-primary flex items-center justify-center p-3 bg-primary/10 rounded-full w-16 h-16 mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl">lock</span>
+            </div>
+            <h1 class="text-2xl font-black text-slate-900 dark:text-white">Acesso Restrito</h1>
+            <p class="text-slate-500 mt-2">Faça login para gerenciar o site</p>
+        </div>
+
+        <form id="login-form" class="space-y-6">
+            <div id="login-error" class="hidden p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">E-mail</label>
+                <input id="login-email" required
+                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none"
+                    type="email" placeholder="admin@email.com" />
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Senha</label>
+                <input id="login-password" required
+                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none"
+                    type="password" placeholder="••••••••" />
+            </div>
+
+            <button type="submit" id="btn-login"
+                class="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary/90 transition shadow-lg flex justify-center items-center gap-2">
+                Entrar
+                <span class="material-symbols-outlined text-sm">login</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Admin Content Container (Hidden by default) -->
+    <div id="admin-content"
+        class="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl border border-primary/10 hidden">
+        <div class="flex justify-between items-center mb-8 pb-6 border-b border-primary/10">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Painel Administrativo</h1>
+                <p class="text-slate-500">Altere imagens, cores e textos usando Banco de Dados (Supabase)</p>
+            </div>
+            <div class="flex gap-4">
+                <a href="main.html"
+                    class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 font-semibold rounded-lg transition dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    Ver Site
+                </a>
+                <button id="btn-logout"
+                    class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 font-semibold rounded-lg transition flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">logout</span>
+                    Sair
+                </button>
+            </div>
+        </div>
+
+        <div id="supabase-warning"
+            class="hidden mb-6 p-4 bg-orange-100 text-orange-800 rounded-xl border border-orange-200 flex items-start gap-4">
+            <span class="material-symbols-outlined shrink-0 mt-0.5">warning</span>
+            <div>
+                <p class="font-bold">O banco de dados não está conectado!</p>
+                <p class="text-sm mt-1">Para que o site funcione publicamente e salve os dados no Supabase, abra o
+                    arquivo <b>db.js</b> e coloque sua URL e Key (Chave Anônima) do projeto do Supabase.</p>
+                <p class="text-sm mt-1">Lembre-se também de criar uma tabela chamada <b>page_settings</b> contendo
+                    colunas listadas no código (por exemplo logo_url, hero_title, etc).</p>
+            </div>
+        </div>
+
+        <form id="admin-form" class="space-y-8">
+
+            <div class="space-y-6">
+                <h2 class="text-xl font-bold border-b border-slate-200 dark:border-slate-800 pb-2">Identidade Visual
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">URL da Logo</label>
+                        <input id="input-logo-url"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                            type="text" placeholder="Cole o link da nova imagem da logo" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Cor Primária
+                            (Hexadecimal)</label>
+                        <div class="flex gap-4">
+                            <input id="input-primary-color"
+                                class="w-full h-14 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-2 focus:ring-2 focus:ring-primary outline-none cursor-pointer"
+                                type="color" value="#4e5f7e" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h2 class="text-xl font-bold border-b border-slate-200 dark:border-slate-800 pb-2">Imagens Principais</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Imagem Hero (Upload)</label>
+                        <input id="upload-hero-image" type="file" accept="image/*"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary outline-none" />
+                        <input id="input-hero-image" type="hidden" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Logo (Upload)</label>
+                        <input id="upload-logo-url" type="file" accept="image/*"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary outline-none" />
+                        <input id="input-logo-url" type="hidden" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                    <h2 class="text-xl font-bold">Promoções (Carrossel)</h2>
+                    <button type="button" id="btn-add-promotion"
+                        class="bg-primary/10 hover:bg-primary/20 transition-colors text-primary px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">add</span> Adicionar Promoção
+                    </button>
+                </div>
+                <div id="admin-promotions-list" class="space-y-6">
+                    <!-- Itens renderizados no admin.js -->
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <h2 class="text-xl font-bold border-b border-slate-200 dark:border-slate-800 pb-2">Textos da Página</h2>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Título Principal (Hero)</label>
+                    <input id="input-hero-title"
+                        class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                        type="text" placeholder="Ex: Regularize seu Veículo..." />
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Subtítulo (Hero)</label>
+                    <textarea id="input-hero-subtitle"
+                        class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                        rows="3"></textarea>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                        <h2 class="text-xl font-bold">Botões Principais (Hero)</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Texto: Botão
+                                Principal</label>
+                            <input id="input-btn1-text"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                                type="text" placeholder="Ex: Falar com Especialista" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Texto: Botão
+                                Secundário</label>
+                            <input id="input-btn2-text"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                                type="text" placeholder="Ex: Ver Serviços" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                        <h2 class="text-xl font-bold">Nossos Serviços (Dinâmico)</h2>
+                        <button type="button" id="btn-add-service"
+                            class="bg-primary/10 hover:bg-primary/20 transition-colors text-primary px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-1"><span
+                                class="material-symbols-outlined text-sm">add</span> Adicionar</button>
+                    </div>
+                    <div id="admin-services-list" class="space-y-6">
+                        <!-- Itens renderizados no admin.js -->
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                        <h2 class="text-xl font-bold">Avaliações e Depoimentos</h2>
+                        <button type="button" id="btn-add-testimonial"
+                            class="bg-primary/10 hover:bg-primary/20 transition-colors text-primary px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-1"><span
+                                class="material-symbols-outlined text-sm">add</span> Adicionar</button>
+                    </div>
+                    <div id="admin-testimonials-list" class="space-y-6">
+                        <!-- Itens renderizados no admin.js -->
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                        <h2 class="text-xl font-bold">Textos Sobre a Empresa</h2>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Número Impacto 1</label>
+                        <input id="input-about-num1"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                            type="text" placeholder="Ex: 10+" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Pequeno Selo (Quote da
+                            Empresa)</label>
+                        <textarea id="input-about-quote"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                            rows="2"></textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Título Principal - Sobre
+                            Nós</label>
+                        <input id="input-about-title"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                            type="text" />
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+                        <h2 class="text-xl font-bold">Informações Secundárias e Contatos</h2>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Link Direto para o
+                            Whatsapp</label>
+                        <input id="input-whatsapp-url"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                            type="url" placeholder="Ex: https://wa.me/5521999999999" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Telefone de Contato
+                            (Formatado)</label>
+                        <input id="input-contact-phone"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                            type="text" placeholder="Ex: (21) 99999-9999" />
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Cidade e Estado</label>
+                            <input id="input-contact-location"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                                type="text" placeholder="Ex: Rio de Janeiro, RJ" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Horário de
+                                Atendimento</label>
+                            <input id="input-contact-hours"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                                type="text" placeholder="Ex: Seg à Sex: 09h às 18h" />
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">E-mail de Contato
+                            (Rodapé)</label>
+                        <input id="input-contact-email"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                            type="email" placeholder="contato@empresa.com.br" />
+                    </div>
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-200 dark:border-slate-800 mt-6">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Instagram</label>
+                            <input id="input-social-instagram"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                                type="url" placeholder="Ex: https://instagram.com/seuusuario" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Facebook</label>
+                            <input id="input-social-facebook"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                                type="url" placeholder="Ex: https://facebook.com/seuusuario" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Google
+                                Avaliações</label>
+                            <input id="input-social-google"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none"
+                                type="url" placeholder="Link do Google Maps/Meu Negócio" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 flex gap-4">
+                    <button type="submit"
+                        class="flex-1 bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary/90 transition shadow-lg flex justify-center items-center gap-2">
+                        Salvar no Banco de Dados
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                    </button>
+                    <button type="button" id="btn-reset-db"
+                        class="bg-red-500 text-white font-bold px-6 rounded-xl hover:bg-red-600 transition shadow-lg flex flex-col justify-center items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">settings_backup_restore</span>
+                        Resetar
+                    </button>
+                </div>
+        </form>
+    </div>
+
+    <!-- DB Script and Logic -->
+    <script src="db.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

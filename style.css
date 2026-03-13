@@ -1,0 +1,60 @@
+:root {
+    --color-primary: 78 95 126;
+    /* Default RGB para #4e5f7e */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: max(884px, 100dvh);
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Swiper Custom Styles */
+.promotions-swiper {
+    --swiper-theme-color: rgb(var(--color-primary));
+    --swiper-navigation-size: 24px;
+}
+
+.promotions-swiper .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+}
+
+.promotions-swiper .swiper-pagination-bullet-active {
+    background: white;
+    width: 24px;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.promotions-swiper .swiper-slide {
+    transition: transform 0.8s ease-in-out;
+}
+
+.promotions-swiper .swiper-slide-active h2 {
+    animation: slideUp 0.8s ease forwards;
+}
+
+.promotions-swiper .swiper-slide-active p {
+    animation: slideUp 0.8s ease 0.2s forwards;
+    opacity: 0;
+}
+
+.promotions-swiper .swiper-slide-active a {
+    animation: slideUp 0.8s ease 0.4s forwards;
+    opacity: 0;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
