@@ -1,0 +1,12 @@
+.git
+.agents
+.gemini
+.env
+desktop.ini
+node_modules
+Dockerfile
+.dockerignore
+task.md
+research_notes.md
+implementation_plan.md
+walkthrough.md
