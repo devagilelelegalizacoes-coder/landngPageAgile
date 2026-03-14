@@ -68,7 +68,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <button type="button" class="absolute top-4 right-4 text-red-500 hover:text-red-600 transition-colors p-1" title="Remover" onclick="removePromotion(${index})"><span class="material-symbols-outlined text-lg">delete</span></button>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-xs uppercase font-bold text-slate-500">Imagem (Upload)</label>
+                        <label class="text-xs uppercase font-bold text-slate-500 flex items-center gap-1">
+                            Imagem (Upload)
+                            <span class="text-[9px] bg-slate-200 dark:bg-slate-700 px-1 rounded text-slate-500">1200x600</span>
+                        </label>
                         <input class="w-full bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-600 rounded-lg p-2 text-sm" type="file" accept="image/*" onchange="uploadPromoImage(${index}, this)" />
                         <input type="hidden" value="${p.image_url || ''}" id="promo-url-${index}" />
                     </div>
@@ -118,7 +121,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             div.innerHTML = `
                 <button type="button" class="absolute top-4 right-4 text-red-500 hover:text-red-600 transition-colors p-1" title="Remover" onclick="removeService(${index})"><span class="material-symbols-outlined text-lg">delete</span></button>
                 <div class="space-y-2">
-                    <label class="text-xs uppercase font-bold text-slate-500">Imagem da Capa (Upload)</label>
+                    <label class="text-xs uppercase font-bold text-slate-500 flex items-center gap-1">
+                        Imagem da Capa (Upload)
+                        <span class="text-[9px] bg-slate-200 dark:bg-slate-700 px-1 rounded text-slate-500">800x800</span>
+                    </label>
                     <input class="w-full bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-600 rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary outline-none" type="file" accept="image/*" onchange="uploadServiceImage(${index}, this)" />
                     <input type="hidden" value="${s.image_url || ''}" id="service-url-${index}" />
                 </div>
