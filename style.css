@@ -12,6 +12,11 @@ body {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
+/* Custom Font: Crazy Loop in Paris */
+.font-crazy-loop {
+    font-family: 'Crazy Loop in Paris', sans-serif !important;
+}
+
 /* Swiper Custom Styles */
 .promotions-swiper {
     --swiper-theme-color: rgb(var(--color-primary));
