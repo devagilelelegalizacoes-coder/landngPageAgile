@@ -56,6 +56,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    const faviconUpload = document.getElementById("upload-favicon-url");
+    if (faviconUpload) faviconUpload.addEventListener("change", async (e) => {
+        if (e.target.files.length > 0) {
+            const url = await uploadImage(e.target.files[0], "favicon");
+            if (url) {
+                document.getElementById("input-favicon-url").value = url;
+                alert("Favicon enviado com sucesso!");
+                // Opcional: Atualiza o favicon na aba do admin imediatamente
+                const link = document.querySelector("link[rel~='icon']");
+                if (link) link.href = url;
+            }
+        }
+    });
+
     // Funções Helper de UI
     window.renderPromotionsList = function () {
         const list = document.getElementById("admin-promotions-list");
@@ -296,11 +310,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                 document.getElementById("input-hero-title").value = data.hero_title || '';
                 document.getElementById("input-hero-subtitle").value = data.hero_subtitle || '';
                 document.getElementById("input-about-title").value = data.about_title || '';
+                document.getElementById("input-company-name-prefix").value = data.company_name_prefix || 'AGILE';
+                document.getElementById("input-company-name-suffix").value = data.company_name_suffix || 'Legalizações';
                 document.getElementById("input-contact-phone").value = data.contact_phone || '';
 
                 document.getElementById("input-logo-url").value = data.logo_url || '';
                 document.getElementById("input-primary-color").value = data.primary_color || '#4e5f7e';
                 document.getElementById("input-hero-image").value = data.hero_image_url || '';
+                document.getElementById("input-favicon-url").value = data.favicon_url || '';
+
+                // Atualiza favicon na aba do admin
+                if (data.favicon_url) {
+                    const link = document.querySelector("link[rel~='icon']");
+                    if (link) link.href = data.favicon_url;
+                }
 
                 // Novos campos
                 document.getElementById("input-btn1-text").value = data.btn1_text || '';
@@ -346,10 +369,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             hero_title: document.getElementById("input-hero-title").value,
             hero_subtitle: document.getElementById("input-hero-subtitle").value,
             about_title: document.getElementById("input-about-title").value,
+            company_name_prefix: document.getElementById("input-company-name-prefix").value,
+            company_name_suffix: document.getElementById("input-company-name-suffix").value,
             contact_phone: document.getElementById("input-contact-phone").value,
             logo_url: document.getElementById("input-logo-url").value,
             primary_color: document.getElementById("input-primary-color").value,
             hero_image_url: document.getElementById("input-hero-image").value,
+            favicon_url: document.getElementById("input-favicon-url").value,
             btn1_text: document.getElementById("input-btn1-text").value,
             btn2_text: document.getElementById("input-btn2-text").value,
 
@@ -403,6 +429,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             hero_title: "Regularize seu Veículo sem Burocracia",
             hero_subtitle: "Despachante especializado em documentação para carros, motos e caminhões. Transferência, licenciamento e regularização de motor com rapidez e segurança.",
             about_title: "Especialistas em resolver problemas burocráticos",
+            company_name_prefix: "AGILE",
+            company_name_suffix: "Legalizações",
             contact_phone: "(21) 99999-9999",
             contact_location: "Rio de Janeiro, RJ",
             contact_hours: "Seg à Sex: 09h às 18h",
@@ -418,6 +446,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             social_google: "",
             logo_url: null,
             hero_image_url: null,
+            favicon_url: null,
             services: [
                 {
                     badge: "Documentação",
